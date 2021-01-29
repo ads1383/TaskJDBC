@@ -24,6 +24,7 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
             Statement statement = connection.createStatement()) {
             try {
                 statement.executeUpdate(sql);
+                connection.commit();
                 System.out.println("Table successfully created...");
             } catch (SQLException s) {
                 System.out.println("The table already exists");
@@ -40,6 +41,7 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
             Statement statement = connection.createStatement()) {
             try {
                 statement.executeUpdate(sql);
+                connection.commit();
                 System.out.println("Table successfully deleted...");
             } catch (SQLException s) {
                 System.out.println("The table does not exist");
@@ -58,6 +60,7 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
             preparedStatement.setString(2, lastName);
             preparedStatement.setInt(3, age);
             preparedStatement.executeUpdate();
+            connection.commit();
             System.out.println("The user" + " " + name + " " + "added...");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -71,6 +74,7 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
+            connection.commit();
             System.out.println("User was deleted...");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -83,11 +87,12 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         List<User> userList = new ArrayList<>();
         try(Connection connection = getConnection();
             Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(sql);
-            while(resultSet.next()) {
-                userList.add(new User(resultSet.getString("name"),
-                                        resultSet.getString("lastName"),
-                                        resultSet.getByte("age")));
+
+                ResultSet resultSet = statement.executeQuery(sql);
+                while(resultSet.next()) {
+                    userList.add(new User(resultSet.getString("name"),
+                                            resultSet.getString("lastName"),
+                                            resultSet.getByte("age")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -101,6 +106,7 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         try(Connection connection = getConnection();
             Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
+            connection.commit();
             System.out.println("Table successfully cleaned...");
         } catch (SQLException e) {
             e.printStackTrace();

@@ -14,6 +14,7 @@ public class Util {
         try {
             Class.forName(DRIVER);
             connection = DriverManager.getConnection(URL, NAME_USER, PASSWORD);
+            connection.setAutoCommit(false);
             //System.out.println("Connection OK");
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
