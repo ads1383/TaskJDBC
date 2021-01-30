@@ -27,6 +27,9 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
                 connection.commit();
                 System.out.println("Table successfully created...");
             } catch (SQLException s) {
+                if (connection != null) {
+                    connection.rollback();
+                }
                 System.out.println("The table already exists");
             }
         } catch (SQLException e) {
@@ -44,6 +47,9 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
                 connection.commit();
                 System.out.println("Table successfully deleted...");
             } catch (SQLException s) {
+                if (connection != null) {
+                    connection.rollback();
+                }
                 System.out.println("The table does not exist");
             }
         } catch (SQLException e) {
@@ -56,12 +62,18 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         String sql = "INSERT INTO users (name, lastName, age) VALUES(?, ?, ?)";
         try(Connection connection = getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, name);
-            preparedStatement.setString(2, lastName);
-            preparedStatement.setInt(3, age);
-            preparedStatement.executeUpdate();
-            connection.commit();
-            System.out.println("The user" + " " + name + " " + "added...");
+            try {
+                preparedStatement.setString(1, name);
+                preparedStatement.setString(2, lastName);
+                preparedStatement.setInt(3, age);
+                preparedStatement.executeUpdate();
+                connection.commit();
+                System.out.println("The user" + " " + name + " " + "added...");
+            } catch (SQLException s) {
+                if (connection != null) {
+                    connection.rollback();
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -72,10 +84,16 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         String sql = "DELETE FROM users WHERE id = ?";
         try(Connection connection = getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setLong(1, id);
-            preparedStatement.executeUpdate();
-            connection.commit();
-            System.out.println("User was deleted...");
+            try {
+                preparedStatement.setLong(1, id);
+                preparedStatement.executeUpdate();
+                connection.commit();
+                System.out.println("User was deleted...");
+            } catch (SQLException s) {
+                if (connection != null) {
+                    connection.rollback();
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -105,9 +123,15 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         String sql = "DELETE FROM users";
         try(Connection connection = getConnection();
             Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sql);
-            connection.commit();
-            System.out.println("Table successfully cleaned...");
+            try {
+                statement.executeUpdate(sql);
+                connection.commit();
+                System.out.println("Table successfully cleaned...");
+            } catch (SQLException s) {
+                if (connection != null) {
+                    connection.rollback();
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
